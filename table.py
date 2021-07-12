@@ -2,22 +2,13 @@
 Módulo Python para el procesamiento de tablas, permite la selección de celdas en
 cualquier dirección.
 """
-TYPES = ('UP', 'DOWN', 'RIGHT', 'LEFT', 'DIAGONAL-X', 'DIAGONAL-Y', 'DIAGONAL-XR', 'DIAGONAL-YR')
-UP = 'UP'
-DOWN = 'DOWN'
-RIGHT = 'RIGHT'
-LEFT = 'LEFT'
-DIAGONAL_X = 'DIAGONAL-X'
-DIAGONAL_Y = 'DIAGONAL-Y'
-DIAGONAL_XR = 'DIAGONAL-XR'
-DIAGONAL_YR = 'DIAGONAL-YR'
-
-__author__ = "Elías Martínez (Magnus)"
+__author__ = "Magnus Martínez"
 __copyright__ = "Copyright 2021"
 __version__ = "1.0"
-__name__ = 'tabla'
+__name__ = 'table'
 
 from tabulate import tabulate
+import constants as cts
 
 
 class AnyError(Exception):
@@ -114,7 +105,8 @@ class Table:
         self.__row = 0
         self.__column = 0
         self.__fill = '0'
-        self.__type = ('UP', 'DOWN', 'RIGHT', 'LEFT', 'DIAGONAL-X', 'DIAGONAL-Y', 'DIAGONAL-XR', 'DIAGONAL-YR')
+        self.__type = cts.TYPES
+        # ('UP', 'DOWN', 'RIGHT', 'LEFT', 'DIAGONAL-X', 'DIAGONAL-Y', 'DIAGONAL-XR', 'DIAGONAL-YR')
         self.__table = None
         self.__make(*args, **kwargs)
 
