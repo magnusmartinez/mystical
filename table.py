@@ -191,7 +191,7 @@ class Table:
         return self.__table
 
     @table.setter
-    def table(self, value):
+    def table(self, value) -> None:
         """Establece una tabla previamente construida.
 
         Parámetros (value)
@@ -220,12 +220,12 @@ class Table:
         else:
             raise TableStructureError
 
+    # Documentado
     @row.setter
     def row(self, value):
         """Actualiza el número de filas de la tabla.
-
-        Excepciones:
-             ValueError, si value no es de tipo número y mayor que 0
+        :param int value: Nuevo número de filas de la tabla.
+        :raise ValueError: Si value no es de tipo int y mayor que 0
         """
         if isinstance(value, int) and value > 0:
             self.__row = value
@@ -233,12 +233,14 @@ class Table:
         else:
             raise ValueError("row debe ser un numero y deber mayor que 0")
 
+    # Documentado
     @column.setter
     def column(self, value):
         """Actualiza el número de columnas de la tabla.
 
-        Excepciones:
-             ValueError, si value no es de tipo número y mayor que 0
+        :param int value: Nueva número de columnas de la tabla.
+
+        :raise ValueError: Si value no es de tipo int y mayor que 0.
         """
         if isinstance(value, int) and value > 0:
             self.__column = value
@@ -246,34 +248,30 @@ class Table:
         else:
             raise ValueError("column debe ser un número y debe ser mayor que 0")
 
+    # Documentado
     def section_up(self, row: int, column: int, cell: int) -> dict:
-        """
-        DESCRIPCIÓN `section_up`:
-            La selección en up se realiza sobre la tabla con sentido al N
-                Noroeste    N   Noreste
-                        O   +   E
-                Suroeste    S   Sureste
+        """Permite realizar un selección sobre la tabla en sentido N (hacia arriba),
+        partiendo del punto (`row`, `column`), abarcando un rango `cell`.
+            NO  N   NE
+            O   +   E
+            SO  S  SE
 
-        PARÁMETROS (row, column, cell):
-            CÓMO SON:
-                row: debe ser de tipo int y ser mayor o igual a 0
-                column: debe ser de tipo int y ser mayor o igual a 0
-                cell: debe ser de tipo ini y ser mayor o igual a 0
+        :param int row: Fila inicial de la selección. Debe ser mayor o igual a 0.
+        :param int column: Columna inicial de la selección. Debe ser mayor o igual a 0.
+        :param int cell: Cantidad de celdas de la tabla a seleccionar. Debe ser mayor o igual a 0.
 
-            QUÉ SON:
-                row: fila inicial de la selección
-                column: columna inicial de la selección
-                cell: la cantidad de celdas a seleccionar
-        RETORNO:
-            Un diccionario con las siguientes llaves:
+        :return: Diccionario que contiene información de la selección. Específicamente el tipo de selección,
+                la posición y el contenido de las celdas de las posiciones seleccionadas.
+                Un diccionario con las siguientes llaves:
                 * type: La orientación de la selección
                 * position: Las posiciones correspondientes a la selección
                 * content-cell: La unión del contenido de las celdas seleccionadas
+        :rtype: dict
 
-        EXCEPCIONES (ValueError):
-            ValueError, si validate(row, column, cell) es Falso
-            TableSectionError, si la selección es incorrecta, es decir, que en la tabla no es posible realizar
-                        ese tipo de selección
+        :raise ValueError: si self.validate(row, column, cell) retorna Falso
+
+        :raise TableSectionError: si la selección es incorrecta, es decir, que en la tabla no es
+         posible realizar ese tipo de selección.
         """
         if not self.validate(row, column, cell):
             raise ValueError(
@@ -287,35 +285,33 @@ class Table:
             output['content-cell'] += self.table[row - i][column]
         return output
 
+    # Documentado
     def section_down(self, row: int, column: int, cell: int) -> dict:
-        """
-        DESCRIPCIÓN `section_down`:
-            La selección en down se realiza sobre la tabla con sentido al S
-                Noroeste    N   Noreste
-                        O   +   E
-                Suroeste    S   Sureste
+        """Permite realizar un selección sobre la tabla en sentido S (hacia abajo),
+        partiendo del punto (`row`, `column`), abarcando un rango `cell`.
+            NO  N   NE
+            O   +   E
+            SO  S  SE
 
-        PARÁMETROS (row, column, cell):
-            CÓMO SON:
-                row: debe ser de tipo int y ser mayor o igual a 0
-                column: debe ser de tipo int y ser mayor o igual a 0
-                cell: debe ser de tipo ini y ser mayor o igual a 0
+        :param int row: Fila inicial de la selección. Debe ser mayor o igual a 0.
+        :param int column: Columna inicial de la selección. Debe ser mayor o igual a 0.
+        :param int cell: Cantidad de celdas de la tabla a seleccionar. Debe ser mayor o igual a 0.
 
-            QUÉ SON:
-                row: fila inicial de la selección
-                column: columna inicial de la selección
-                cell: la cantidad de celdas a seleccionar
-        RETORNO:
-            Un diccionario con las siguientes llaves:
+
+        :return: Diccionario que contiene información de la selección. Específicamente el tipo de selección,
+                la posición y el contenido de las celdas de las posiciones seleccionadas.
+                Un diccionario con las siguientes llaves:
                 * type: La orientación de la selección
                 * position: Las posiciones correspondientes a la selección
                 * content-cell: La unión del contenido de las celdas seleccionadas
+        :rtype: dict
 
-        EXCEPCIONES (ValueError):
-            ValueError, si validate(row, column, cell) es Falso
-            TableSectionError, si la selección es incorrecta, es decir, que en la tabla no es posible realizar
-                        ese tipo de selección
+        :raise ValueError: si self.validate(row, column, cell) retorna Falso
+
+        :raise TableSectionError: si la selección es incorrecta, es decir, que en la tabla no es
+         posible realizar ese tipo de selección.
         """
+
         if not self.validate(row, column, cell):
             raise ValueError(
                 'Los parámetros no son válidos.'
@@ -329,34 +325,31 @@ class Table:
                 raise TableSectionError("Limites excedidos.")
         return output
 
+    # Documentado
     def section_right(self, row: int, column: int, cell: int) -> dict:
-        """
-        DESCRIPCIÓN `section_right`:
-            La selección en right se realiza sobre la tabla con sentido al E
-                Noroeste    N   Noreste
-                        O   +   E
-                Suroeste    S   Sureste
+        """Permite realizar un selección sobre la tabla en sentido E (hacia la derecha),
+        partiendo del punto (`row`, `column`), abarcando un rango `cell`.
+            NO  N   NE
+            O   +   E
+            SO  S  SE
 
-        PARÁMETROS (row, column, cell):
-            CÓMO SON:
-                row: debe ser de tipo int y ser mayor o igual a 0
-                column: debe ser de tipo int y ser mayor o igual a 0
-                cell: debe ser de tipo ini y ser mayor o igual a 0
+        :param int row: Fila inicial de la selección. Debe ser mayor o igual a 0.
+        :param int column: Columna inicial de la selección. Debe ser mayor o igual a 0.
+        :param int cell: Cantidad de celdas de la tabla a seleccionar. Debe ser mayor o igual a 0.
 
-            QUÉ SON:
-                row: fila inicial de la selección
-                column: columna inicial de la selección
-                cell: la cantidad de celdas a seleccionar
-        RETORNO:
-            Un diccionario con las siguientes llaves:
+
+        :return: Diccionario que contiene información de la selección. Específicamente el tipo de selección,
+                la posición y el contenido de las celdas de las posiciones seleccionadas.
+                Un diccionario con las siguientes llaves:
                 * type: La orientación de la selección
                 * position: Las posiciones correspondientes a la selección
                 * content-cell: La unión del contenido de las celdas seleccionadas
+        :rtype: dict
 
-        EXCEPCIONES (ValueError):
-            ValueError, si validate(row, column, cell) es Falso
-            TableSectionError, si la selección es incorrecta, es decir, que en la tabla no es posible realizar
-                        ese tipo de selección
+        :raise ValueError: si self.validate(row, column, cell) retorna Falso
+
+        :raise TableSectionError: si la selección es incorrecta, es decir, que en la tabla no es
+         posible realizar ese tipo de selección.
         """
         if not self.validate(row, column, cell):
             raise ValueError(
@@ -371,34 +364,31 @@ class Table:
                 raise TableSectionError()
         return output
 
+    # Documentado
     def section_left(self, row: int, column: int, cell: int) -> dict:
-        """
-        DESCRIPCIÓN `section_left`:
-            La selección en left se realiza sobre la tabla con sentido al O
-                Noroeste    N   Noreste
-                        O   +   E
-                Suroeste    S   Sureste
+        """Permite realizar un selección sobre la tabla en sentido O (hacia la izquierda),
+        partiendo del punto (`row`, `column`), abarcando un rango `cell`.
+            NO  N   NE
+            O   +   E
+            SO  S  SE
 
-        PARÁMETROS (row, column, cell):
-            CÓMO SON:
-                row: debe ser de tipo int y ser mayor o igual a 0
-                column: debe ser de tipo int y ser mayor o igual a 0
-                cell: debe ser de tipo ini y ser mayor o igual a 0
+        :param int row: Fila inicial de la selección. Debe ser mayor o igual a 0.
+        :param int column: Columna inicial de la selección. Debe ser mayor o igual a 0.
+        :param int cell: Cantidad de celdas de la tabla a seleccionar. Debe ser mayor o igual a 0.
 
-            QUÉ SON:
-                row: fila inicial de la selección
-                column: columna inicial de la selección
-                cell: la cantidad de celdas a seleccionar
-        RETORNO:
-            Un diccionario con las siguientes llaves:
+
+        :return: Diccionario que contiene información de la selección. Específicamente el tipo de selección,
+                la posición y el contenido de las celdas de las posiciones seleccionadas.
+                Un diccionario con las siguientes llaves:
                 * type: La orientación de la selección
                 * position: Las posiciones correspondientes a la selección
                 * content-cell: La unión del contenido de las celdas seleccionadas
+        :rtype: dict
 
-        EXCEPCIONES (ValueError):
-            ValueError, si validate(row, column, cell) es Falso
-            TableSectionError, si la selección es incorrecta, es decir, que en la tabla no es posible realizar
-                        ese tipo de selección
+        :raise ValueError: si self.validate(row, column, cell) retorna Falso
+
+        :raise TableSectionError: si la selección es incorrecta, es decir, que en la tabla no es
+         posible realizar ese tipo de selección.
         """
         if not self.validate(row, column, cell):
             raise ValueError(
@@ -412,34 +402,31 @@ class Table:
             output['content-cell'] += self.table[row][column - i]
         return output
 
+    # Documentado
     def section_diagonal_x(self, row: int, column: int, cell: int) -> dict:
-        """
-        DESCRIPCIÓN `section_diagonal_x`:
-            La selección en diagonal-x se realiza sobre la tabla con sentido al Noreste
-                Noroeste    N   Noreste
-                        O   +   E
-                Suroeste    S   Sureste
+        """Permite realizar un selección sobre la tabla en sentido NE (hacia la derecha y hacia arriba),
+        partiendo del punto (`row`, `column`), abarcando un rango `cell`.
+            NO  N   NE
+            O   +   E
+            SO  S  SE
 
-        PARÁMETROS (row, column, cell):
-            CÓMO SON:
-                row: debe ser de tipo int y ser mayor o igual a 0
-                column: debe ser de tipo int y ser mayor o igual a 0
-                cell: debe ser de tipo ini y ser mayor o igual a 0
+        :param int row: Fila inicial de la selección. Debe ser mayor o igual a 0.
+        :param int column: Columna inicial de la selección. Debe ser mayor o igual a 0.
+        :param int cell: Cantidad de celdas de la tabla a seleccionar. Debe ser mayor o igual a 0.
 
-            QUÉ SON:
-                row: fila inicial de la selección
-                column: columna inicial de la selección
-                cell: la cantidad de celdas a seleccionar
-        RETORNO:
-            Un diccionario con las siguientes llaves:
+
+        :return: Diccionario que contiene información de la selección. Específicamente el tipo de selección,
+                la posición y el contenido de las celdas de las posiciones seleccionadas.
+                Un diccionario con las siguientes llaves:
                 * type: La orientación de la selección
                 * position: Las posiciones correspondientes a la selección
                 * content-cell: La unión del contenido de las celdas seleccionadas
+        :rtype: dict
 
-        EXCEPCIONES (ValueError):
-            ValueError, si validate(row, column, cell) es Falso
-            TableSectionError, si la selección es incorrecta, es decir, que en la tabla no es posible realizar
-                        ese tipo de selección
+        :raise ValueError: si self.validate(row, column, cell) retorna Falso
+
+        :raise TableSectionError: si la selección es incorrecta, es decir, que en la tabla no es
+         posible realizar ese tipo de selección.
         """
         if not self.validate(row, column, cell):
             raise ValueError(
@@ -456,34 +443,31 @@ class Table:
                 raise TableSectionError()
         return output
 
+    # Documentado
     def section_diagonal_y(self, row: int, column: int, cell: int) -> dict:
-        """
-        DESCRIPCIÓN `section_diagonal_y`:
-            La selección en diagonal-y se realiza sobre la tabla con sentido al Noroeste
-                Noroeste    N   Noreste
-                        O   +   E
-                Suroeste    S   Sureste
+        """Permite realizar un selección sobre la tabla en sentido NO (hacia la izquierda y hacia arriba),
+        partiendo del punto (`row`, `column`), un rango `cell`.
+            NO  N   NE
+            O   +   E
+            SO  S  SE
 
-        PARÁMETROS (row, column, cell):
-            CÓMO SON:
-                row: debe ser de tipo int y ser mayor o igual a 0
-                column: debe ser de tipo int y ser mayor o igual a 0
-                cell: debe ser de tipo ini y ser mayor o igual a 0
+        :param int row: Fila inicial de la selección. Debe ser mayor o igual a 0.
+        :param int column: Columna inicial de la selección. Debe ser mayor o igual a 0.
+        :param int cell: Cantidad de celdas de la tabla a seleccionar. Debe ser mayor o igual a 0.
 
-            QUÉ SON:
-                row: fila inicial de la selección
-                column: columna inicial de la selección
-                cell: la cantidad de celdas a seleccionar
-        RETORNO:
-            Un diccionario con las siguientes llaves:
+
+        :return: Diccionario que contiene información de la selección. Específicamente el tipo de selección,
+                la posición y el contenido de las celdas de las posiciones seleccionadas.
+                Un diccionario con las siguientes llaves:
                 * type: La orientación de la selección
                 * position: Las posiciones correspondientes a la selección
                 * content-cell: La unión del contenido de las celdas seleccionadas
+        :rtype: dict
 
-        EXCEPCIONES (ValueError):
-            ValueError, si validate(row, column, cell) es Falso
-            TableSectionError, si la selección es incorrecta, es decir, que en la tabla no es posible realizar
-                        ese tipo de selección
+        :raise ValueError: si self.validate(row, column, cell) retorna Falso
+
+        :raise TableSectionError: si la selección es incorrecta, es decir, que en la tabla no es
+         posible realizar ese tipo de selección.
         """
         if not self.validate(row, column, cell):
             raise ValueError(
@@ -500,34 +484,31 @@ class Table:
                 raise TableSectionError()
         return output
 
+    # Documentado
     def section_diagonal_xr(self, row: int, column: int, cell: int) -> dict:
-        """
-        DESCRIPCIÓN `section_diagonal_xr`:
-            La selección en diagonal-xr se realiza sobre la tabla con sentido al Suroeste
-                Noroeste    N   Noreste
-                        O   +   E
-                Suroeste    S   Sureste
+        """Permite realizar un selección sobre la tabla en sentido SO (hacia abajo y hacia la izquierda),
+        partiendo del punto (`row`, `column`), abarcando un rango `cell`.
+            NO  N   NE
+            O   +   E
+            SO  S  SE
 
-        PARÁMETROS (row, column, cell):
-            CÓMO SON:
-                row: debe ser de tipo int y ser mayor o igual a 0
-                column: debe ser de tipo int y ser mayor o igual a 0
-                cell: debe ser de tipo ini y ser mayor o igual a 0
+        :param int row: Fila inicial de la selección. Debe ser mayor o igual a 0.
+        :param int column: Columna inicial de la selección. Debe ser mayor o igual a 0.
+        :param int cell: Cantidad de celdas de la tabla a seleccionar. Debe ser mayor o igual a 0.
 
-            QUÉ SON:
-                row: fila inicial de la selección
-                column: columna inicial de la selección
-                cell: la cantidad de celdas a seleccionar
-        RETORNO:
-            Un diccionario con las siguientes llaves:
+
+        :return: Diccionario que contiene información de la selección. Específicamente el tipo de selección,
+                la posición y el contenido de las celdas de las posiciones seleccionadas.
+                Un diccionario con las siguientes llaves:
                 * type: La orientación de la selección
                 * position: Las posiciones correspondientes a la selección
                 * content-cell: La unión del contenido de las celdas seleccionadas
+        :rtype: dict
 
-        EXCEPCIONES (ValueError):
-            ValueError, si validate(row, column, cell) es Falso
-            TableSectionError, si la selección es incorrecta, es decir, que en la tabla no es posible realizar
-                        ese tipo de selección
+        :raise ValueError: si self.validate(row, column, cell) retorna Falso
+
+        :raise TableSectionError: si la selección es incorrecta, es decir, que en la tabla no es
+         posible realizar ese tipo de selección.
         """
 
         if not self.validate(row, column, cell):
@@ -545,34 +526,31 @@ class Table:
                 raise TableSectionError()
         return output
 
+    # Documentado
     def section_diagonal_yr(self, row: int, column: int, cell: int) -> dict:
-        """
-        DESCRIPCIÓN `section_diagonal_yr`:
-            La selección en diagonal-yr se realiza sobre la tabla con sentido al Sureste
-                Noroeste    N   Noreste
-                        O   +   E
-                Suroeste    S   Sureste
+        """Permite realizar un selección sobre la tabla en sentido SE (hacia abajo y hacia la derecha),
+        partiendo del punto (`row`, `column`), abarcando un rango `cell`.
+            NO  N   NE
+            O section_diagonal_xr  +   E
+            SO  S  SE
 
-        PARÁMETROS (row, column, cell):
-            CÓMO SON:
-                row: debe ser de tipo int y ser mayor o igual a 0
-                column: debe ser de tipo int y ser mayor o igual a 0
-                cell: debe ser de tipo ini y ser mayor o igual a 0
+        :param int row: Fila inicial de la selección. Debe ser mayor o igual a 0.
+        :param int column: Columna inicial de la selección. Debe ser mayor o igual a 0.
+        :param int cell: Cantidad de celdas de la tabla a seleccionar. Debe ser mayor o igual a 0.
 
-            QUÉ SON:
-                row: fila inicial de la selección
-                column: columna inicial de la selección
-                cell: la cantidad de celdas a seleccionar
-        RETORNO:
-            Un diccionario con las siguientes llaves:
+
+        :return: Diccionario que contiene información de la selección. Específicamente el tipo de selección,
+                la posición y el contenido de las celdas de las posiciones seleccionadas.
+                Un diccionario con las siguientes llaves:
                 * type: La orientación de la selección
                 * position: Las posiciones correspondientes a la selección
                 * content-cell: La unión del contenido de las celdas seleccionadas
+        :rtype: dict
 
-        EXCEPCIONES (ValueError):
-            ValueError, si validate(row, column, cell) es Falso
-            TableSectionError, si la selección es incorrecta, es decir, que en la tabla no es posible realizar
-                        ese tipo de selección
+        :raise ValueError: si self.validate(row, column, cell) retorna Falso
+
+        :raise TableSectionError: si la selección es incorrecta, es decir, que en la tabla no es
+         posible realizar ese tipo de selección.
         """
         if not self.validate(row, column, cell):
             raise ValueError(
@@ -587,27 +565,55 @@ class Table:
                 raise TableSectionError()
         return output
 
+    # Documentado
     @staticmethod
     def validate(row: int, column: int, cell: int) -> bool:
-        """Valida los argumentos para obtener una sección de la tabla.
+        """Método estático que valida los argumentos para obtener una sección de la tabla.
 
-            ACCIONES:
+            Comprueba que los parámetros `row`, `column` y `cell` sean números mayores o iguales a 0.
+            Decide si son íntegros, no si la selección es válida.
 
-            * Comprueba que los parámetros `row`, `column` y `cell` sean números mayores o iguales a 0. Decide si son íntegros, no si la sección es válida
-
-            :param row: fila inicial de la selección
-            :type row: int
-            :param column: columna inicial de la selección
-            :type column: int
-            :param cell: cantidad de celdas para seleccionar
-            :type cell: int
-            :return: True si row, column y cell son válidos, False si uno o más de los parámetros es inválido
+            :param int row: fila inicial de la selección.
+            :param int column: columna inicial de la selección.
+            :param int cell: cantidad de celdas para seleccionar.
+            :return: True si row, column y cell son válidos, False si uno o más de los parámetros es inválido.
             :rtype: bool
         """
         return not any([not (isinstance(value, int) and value >= 0) for value in (row, column, cell)])
 
-    def section(self, direction, row_start, column_start, cell):
-        """Obtiene un sección de la tabla en cualquier dirección."""
+    # Documentado
+    def section(self, direction: str, row_start, column_start, cell) -> dict:
+        """Obtiene un sección de la tabla en cualquier dirección.
+        Combina los métodos de selección de la tabla.
+
+        :param str direction:
+        Dirección de la selección. 'UP', paso los parámetros `row_start`, `column_start`
+        y `cell` al método section_up; 'DOWN', paso los parámetros `row_start`, `column_start`
+        y `cell` al método section_down; 'RIGHT', paso los parámetros `row_start`, `column_start`
+        y `cell` al método section_right; 'LEFT', paso los parámetros `row_start`, `column_start`
+        y `cell` al método section_left; 'DIAGONAL-X', paso los parámetros `row_start`, `column_start`
+        y `cell` al método section_diagonal_x; 'DIAGONAL-Y', paso los parámetros `row_start`, `column_start`
+        y `cell` al método section_diagonal_y; 'DIAGONAL-XR', paso los parámetros `row_start`, `column_start`
+        y `cell` al método section_diagonal_xr; 'DIAGONAL-YR', paso los parámetros `row_start`, `column_start`
+        y `cell` al método section_diagonal_yr.
+
+        :param int row_start: Fila inicial de la selección. Debe ser mayor o igual a 0.
+        :param int column_start: Columna inicial de la selección. Debe ser mayor o igual a 0.
+        :param int cell: Cantidad de celdas de la tabla a seleccionar. Debe ser mayor o igual a 0.
+
+        :return: Diccionario que contiene información de la selección. Específicamente el tipo de selección,
+                la posición y el contenido de las celdas de las posiciones seleccionadas.
+                Un diccionario con las siguientes llaves:
+                * type: La orientación de la selección
+                * position: Las posiciones correspondientes a la selección
+                * content-cell: La unión del contenido de las celdas seleccionadas
+        :rtype: dict
+
+        :raise ValueError: si self.validate(row, column, cell) retorna Falso
+
+        :raise TableSectionError: si la selección es incorrecta, es decir, que en la tabla no es
+         posible realizar ese tipo de selección.
+        """
 
         if direction.upper() == self.__type[0]:
             return self.section_up(row_start, column_start, cell)
@@ -633,27 +639,33 @@ class Table:
         elif direction.upper() == self.__type[7]:
             return self.section_diagonal_yr(row_start, column_start, cell)
 
+    # Documentado
     def get_row(self, row: int) -> list:
-        """Obtiene una fila de la tabla
-        Devuelve None si no existe la fila
+        """Obtiene una fila completa de la tabla.
+
+        :param int row: fila a obtener.
+
+        :return: Retorna una lista que representa la fila obtenida. Retorna `None` si la fila no existe
+        :rtype (list, None):
         """
         # si es numero mayor o igual que 0 y menor o igual que la cantidad de filas de la tabla
         if isinstance(row, int) and 0 <= row <= len(self.table):
             return self.table[row]
-        else:
-            return None
 
+    # Documentado
     def get_column(self, column: int) -> list:
-        """Obtiene una column de la tabla
-        Devuelve None si no existe la columna
-        """
+        """Obtiene una columna completa de la tabla.
+
+            :param int column: columna a obtener.
+
+            :return: Retorna una lista que representa la columna obtenida. Retorna `None` si la columna no existe
+            :rtype (list, None):
+            """
         if isinstance(column, int) and column >= 0 and len(self.table[0]):
             try:
                 return list(self.section_down(0, column, len(self.table))['content-cell'])
             except TableSectionError:
-                return None
-        else:
-            return None
+                pass
 
 
 class TableSection:
@@ -740,10 +752,12 @@ class TableSection:
     def gn_section_diagonal_yr(self):
         # formula para validar la búsqueda en diagonal-yr
         # x + cell <= row - 1 and y + cell <= column - 1
-        if self.__x__ + self.__cell__ <= len(self.__table__) - 1 and self.__y__ + self.__cell__ <= len(self.__table__[0]) - 1:
+        if self.__x__ + self.__cell__ <= len(self.__table__) - 1 and self.__y__ + self.__cell__ <= len(
+                self.__table__[0]) - 1:
             self.__stop = (self.__x__ + self.__cell__, self.__y__ + self.__cell__)
             for i in range(self.__cell__ + 1):
                 yield self.__x__ + i, self.__y__ + i
+
 
 xy = (1, 1)
 cell = 3
@@ -753,9 +767,4 @@ t = [
     ['Ñ', 'O', 'P', 'Q', 'R', 'S'],
     ['T', 'V', 'X', 'Y', 'Z', '0'],
     ['1', '2', '3', '4', '5', '6']]
-
-g = TableSection(xy[0], xy[0], cell,t)
-
-d = g.gn_section_right()
-print(next(d))
 
