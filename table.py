@@ -44,76 +44,48 @@ class TableStructureError(AnyError):
 class Table:
     """Permita la creación y manipulación tablas.
 
-    Argumentos:
-    Si el número de argumentos es 3, el primero será el número de filas de la tabla,
-    el segundo será el número de columnas de la tabla y el tercero será el contenido de las celdas de la tabla.
-    #>>>print(Table(2, 5, 'r'))
-            +---+---+---+---+---+
-            | r | r | r | r | r |
-            +---+---+---+---+---+
-            | r | r | r | r | r |
-            +---+---+---+---+---+
+    Construye la tabla en base a los argumentos pasados.
+    Hay varias formas para obtener los valores para la creación de la tabla.
 
-    Si el número de argumentos es 2, el primero será el número de filas y
-    el segundo será el número de columnas de la tabla.
-    #>>>print(Table(2, 3))
-            +---+---+---+
-            | 0 | 0 | 0 |
-            +---+---+---+
-            | 0 | 0 | 0 |
-            +---+---+---+
+            Pasando parámetros usando *args:
 
-    Si el número de argumentos es igual a 1, será ser la representación de una tabla con listas.
-    El llenado de las celdas es albitrario.
-    #>>>print(Table([[2, True, 'Python'], [0.2, '0', 4], ['Python', 'Es', 'Bueno']]))
-            +--------+------+--------+
-            | 2      | True | Python |
-            +--------+------+--------+
-            | 0.2    | 0    | 4      |
-            +--------+------+--------+
-            | Python | Es   | Bueno  |
-            +--------+------+--------+
+                Si se pasa 1 argumento, se asume que es una tabla previamente construida. Si se pasan 2 argumentos, se asume
+                que el primero es el número de filas que debe tener la tabla y el segundo es son la cantidad de columnas que
+                debe tener la tabla. Si se pasan 3 argumentos, se asume que el primero es la cantidad de filas que debe
+                tener la tabla, el segundo representa la cantidad de columnas y el último es el contenido que desea que
+                tengan las celdas inicialmente.
 
-    Si se pasan argumentos por referencia, row y column corresponden al número de filas y columnas respectivamente.
-    #>>>print(Table(row=2, column=3))
-            +---+---+---+
-            | 0 | 0 | 0 |
-            +---+---+---+
-            | 0 | 0 | 0 |
-            +---+---+---+
+            Pasando parámetros usando **kwargs:
 
-    Opcionalmente, para establecer un contenido de celdas utilice fill.
-    #>>>print(Table(row=2, column=3, fill=2.4))
-            +-----+-----+-----+
-            | 2.4 | 2.4 | 2.4 |
-            +-----+-----+-----+
-            | 2.4 | 2.4 | 2.4 |
-            +-----+-----+-----+
+                `table`, para pasar una tabla previamente construida.
+                `fill`, para pasar el contenido que desea que tengan las celdas inicialmente.
+                `row`: para pasar el número de filas que debe tener la tabla.
+                `column`: para pasar el número de columnas que debe tener la tabla.
 
-    Para utilizar una tabla previamente creada, utilice table.
-    #>>>print(Table(table=[[2, True, 'Python'], [0.2, '0', 4], ['Python', 'Es', 'Bueno']]))
-            +--------+------+--------+
-            | 2      | True | Python |
-            +--------+------+--------+
-            | 0.2    | 0    | 4      |
-            +--------+------+--------+
-            | Python | Es   | Bueno  |
-            +--------+------+--------+
-    """
+            Restricciones:
+            * El paso de parámetros de forma arbitraria solo se permite mediante *args o **kwargs, no se puede usar ambos
+            de forma simultanea.
+            * Pasando argumentos por **kwargs: la clave table omite a las demás, es decir, si se pasa table no se debe de
+            pasar otros argumentos en vista de que table debe ser una tabla previamente construida. Si clave table no es
+            pasada, las claves row y column pasa a ser obligatorias. La clave fill es opcional, sino se provee, se usa su
+            valor por defecto que es 0.
+
+            :raise ValueError: Si se pasa parámetros por *args y **kwargs.
+            :raise KeyError: Si se omite la clave table y no se pasa la clave row y column en su sustitución.
+        """
 
     def __init__(self, *args, **kwargs):
         self.__row = 0
         self.__column = 0
-        self.__fill = '0'
+        self.__fill = 0
         self.__type = cts.TYPES
-        # ('UP', 'DOWN', 'RIGHT', 'LEFT', 'DIAGONAL-X', 'DIAGONAL-Y', 'DIAGONAL-XR', 'DIAGONAL-YR')
         self.__table = None
         self.__make(*args, **kwargs)
 
     def __make(self, *args, **kwargs):
-        """Construye la tabla en base a los argumentos pasados"""
+
         if args and kwargs:
-            raise ValueError('No se permite el paso de parametros por posicion y por referencia de forma simultanea')
+            raise ValueError('No se permite el paso de parámetros por *args y **kwargs de forma simultanea.')
 
         if len(args):
             if len(args) == 3:
@@ -153,51 +125,50 @@ class Table:
                 self.__table = [[self.__fill] * self.column for _ in range(self.row)]
 
     def __str__(self):
-        # In [10]: tabulate.tabulate([[2, 2],[3, 4]], tablefmt="grid")
-        # Out[10]: '+---+---+\n| 2 | 2 |\n+---+---+\n| 3 | 4 |\n+---+---+'
         return tabulate(self.__table, tablefmt="grid")
 
     def __repr__(self):
         return f"{self.__class__.__name__}({self.row}, {self.column}, {self.fill})"
 
+    # Documentado
     @property
     def row(self) -> int:
         """Devuelve el número de filas de la tabla."""
         return self.__row
 
+    # Documentado
     @property
     def column(self) -> int:
         """Devuelve el número de columnas de la tabla."""
         return self.__column
 
+    # Documentado
     @property
     def fill(self):
         """Devuelve el tipo de llenado que tiene la tabla.
-        Devuelve None, no cuando la tabla es pasada ya construida.
+        :return: Devuelve None cuando la tabla es pasada ya construida, debido a que estas pueden tener un contenido
+        arbitrario.
         """
         return self.__fill
 
+    # Documentado
     @property
     def table(self) -> list[[list, ..., list]]:
         """Devuelve la tabla."""
         return self.__table
 
+    # Documentado
     @table.setter
     def table(self, value) -> None:
         """Establece una tabla previamente construida.
+        La tabla previamente construida debe cumplir las siguientes directivas:
 
-        Parámetros (value)
-            QUÉ SON:
-                value: es una matriz previamente construida.
+        * La tabla debe ser de tipo lista y todos elementos también
+        * Las dimensiones mínimas admitidas son 1x1
+        * El número de celdas en cada fila debe ser común.
 
-            CÓMO SON:
-                1. La tabla debe ser de tipo lista y todos elementos también
-                2. Las dimensiones mínimas admitidas son 1x1
-                3. El número de celdas en cada fila debe ser común.
-
-        EXCEPCIONES:
-            TableStructureError, si no se cumple alguno de los puntos anteriores.
-
+        :param list value: Es una matriz previamente construida.
+        :raise TableStructureError:  Si la matriz pasada no cumple con las directivas.
         """
         if isinstance(value, list) and not any(map(lambda x: not isinstance(x, list), value)):
             _row = len(value[0])
@@ -760,3 +731,5 @@ t = [
     ['T', 'V', 'X', 'Y', 'Z', '0'],
     ['1', '2', '3', '4', '5', '6']]
 
+k = Table(row=2, column=3)
+print(k)
