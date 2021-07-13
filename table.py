@@ -42,7 +42,7 @@ class TableStructureError(AnyError):
 
 
 class Table:
-    """Permita la creación y manipulación tablas.
+    """Permita la creación y manipulación de tablas.
 
     Construye la tabla en base a los argumentos pasados.
     Hay varias formas para obtener los valores para la creación de la tabla.
@@ -83,7 +83,6 @@ class Table:
         self.__make(*args, **kwargs)
 
     def __make(self, *args, **kwargs):
-
         if args and kwargs:
             raise ValueError('No se permite el paso de parámetros por *args y **kwargs de forma simultanea.')
 
@@ -609,7 +608,7 @@ class Table:
         :param int row: fila a obtener.
 
         :return: Retorna una lista que representa la fila obtenida. Retorna `None` si la fila no existe
-        :rtype (list, None):
+        :rtype: list
         """
         # si es numero mayor o igual que 0 y menor o igual que la cantidad de filas de la tabla
         if isinstance(row, int) and 0 <= row <= len(self.table):
@@ -622,7 +621,7 @@ class Table:
             :param int column: columna a obtener.
 
             :return: Retorna una lista que representa la columna obtenida. Retorna `None` si la columna no existe
-            :rtype (list, None):
+            :rtype: list
             """
         if isinstance(column, int) and column >= 0 and len(self.table[0]):
             try:
@@ -632,8 +631,15 @@ class Table:
 
 
 class TableSection:
-    # Manipula la tabla utilizando un algoritmo distinto a Tabla, uno basado en calculo y no en iteraciones.
+    """Selecciona partes de la tabla utilizando un algoritmo basado en cálculos de inecuaciones y no en iteraciones."""
+
     def __init__(self, x, y, cells, table):
+        """
+        :param int x: Representa la fila inicial de la selección.
+        :param int y: Representa la columna inicial de la selección.
+        :param int cells: Representa la cantidad de celdas a seleccionar de la tabla
+        :param list[list, ..., list] table: Es la tabla sobre la cual se realizarán las operaciones de selección.
+        """
         self.__x__ = x
         self.__y__ = y
         self.__cell__ = cells
@@ -641,26 +647,59 @@ class TableSection:
         self.__stop = ()
         self.__start = (x, y)
 
+    # Documentado
     @property
-    def start(self):
+    def start(self) -> tuple:
+        """Representa la posición inicial de la selección.
+        :return: Es un par ordenado (x, y) que representa la posición inicial de la selección.
+        :rtype: tuple
+        """
         return self.__start
 
+    # Documentado
     @property
-    def stop(self):
-        # el valor de stop estara disponible despues de la primera ejecuccion del metodo next
+    def stop(self) -> tuple:
+        """Representa la posición final de la selección.
+        NOTA: el valor de stop estará disponible justo después de la primera ejecución del método next sobre el
+        generador retornado por cualquiera de los métodos de selección de la tabla. Antes de la primero ejecución del
+        método next sobre cualquiera de los generadores retornados por alguno de los métodos de selección de la tabla,
+        stop será igual a ()
+        :return: Devuelva una par ordenado (x, y) que son la última celda seleccionada.
+        :rtype: tuple
+        """
         return self.__stop
 
+    # Documentado
     def gn_section_right(self):
+        """Permite obtener una selección en sentido E (hacia la derecha).
+        La selección inicia en (self.x, self.y) abarcando un rango de celdas indicado por self.cells sobre self.table
+        en dirección E.
+            NO  N   NE
+            O   +   E
+            SO  S  SE
+        :return: Un generador que contiene las posiciones seleccionadas de la tabla. retorna None si la selección
+        no se puede realizar.
+        :rtype: generator
+        """
         # formula para validar la búsqueda hacia la derecha
         # y + cell <= column - 1
-        # El valor de stop estara disponible despues de la primera ejecucion del metodo next
-
         if self.__y__ + self.__cell__ <= len(self.__table__[0]) - 1:
             self.__stop = (self.__x__, self.__y__ + self.__cell__)
             for i in range(self.__cell__ + 1):
                 yield self.__x__, self.__y__ + i
 
+    # Documentado
     def gn_section_down(self):
+        """Permite obtener una selección en sentido S (hacia abajo).
+        La selección inicia en (self.x, self.y) abarcando un rango de celdas indicado por self.cells sobre self.table
+        en dirección S.
+            NO  N   NE
+            O   +   E
+            SO  S  SE
+        :return: Un generador que contiene las posiciones seleccionadas de la tabla. retorna None si la selección
+        no se puede realizar.
+        :rtype: generator
+        """
         # formula para validar la búsqueda hacia la abajo
         # x + cell <= row - 1
         if self.__x__ + self.__cell__ <= len(self.__table__) - 1:
@@ -668,7 +707,18 @@ class TableSection:
             for i in range(self.__cell__ + 1):
                 yield self.__x__ + i, self.__y__
 
+    # Documentado
     def gn_section_left(self):
+        """Permite obtener una selección en sentido O (hacia la izquierda).
+        La selección inicia en (self.x, self.y) abarcando un rango de celdas indicado por self.cells sobre self.table
+        en dirección O.
+            NO  N   NE
+            O   +   E
+            SO  S  SE
+        :return: Un generador que contiene las posiciones seleccionadas de la tabla. retorna None si la selección
+        no se puede realizar.
+        :rtype: generator
+        """
         # formula para validar la búsqueda hacia la izquierda
         # y + 1 - cell >= 0
 
@@ -677,7 +727,18 @@ class TableSection:
             for i in range(self.__cell__):
                 yield self.__x__, self.__y__ - i
 
+    # Documentado
     def gn_section_up(self):
+        """Permite obtener una selección en sentido N (hacia arriba).
+        La selección inicia en (self.x, self.y) abarcando un rango de celdas indicado por self.cells sobre self.table
+        en dirección N.
+            NO  N   NE
+            O   +   E
+            SO  S  SE
+        :return: Un generador que contiene las posiciones seleccionadas de la tabla. retorna None si la selección
+        no se puede realizar.
+        :rtype: generator
+        """
         # formula para validar la búsqueda hacia arriba
         # x - cell >= 0
 
@@ -686,7 +747,18 @@ class TableSection:
             for i in range(self.__cell__ + 1):
                 yield self.__x__ - i, self.__y__
 
+    # Documentado
     def gn_section_diagonal_x(self):
+        """Permite obtener una selección en sentido NE (hacia la derecha y hacia arriba).
+        La selección inicia en (self.x, self.y) abarcando un rango de celdas indicado por self.cells sobre self.table
+        en dirección NE.
+            NO  N   NE
+            O   +   E
+            SO  S  SE
+        :return: Un generador que contiene las posiciones seleccionadas de la tabla. retorna None si la selección
+        no se puede realizar.
+        :rtype: generator
+        """
         # formula para validar la búsqueda en diagonal-x
         # x - cell >= 0 and y + cell <= column - 1
         if self.__x__ - self.__cell__ >= 0 and self.__y__ + self.__cell__ <= len(self.__table__[0]) - 1:
@@ -694,7 +766,18 @@ class TableSection:
             for i in range(self.__cell__ + 1):
                 yield self.__x__ - i, self.__y__ + i
 
+    # Documentado
     def gn_section_diagonal_y(self):
+        """Permite obtener una selección en sentido NO (hacia la izquierda y hacia arriba).
+        La selección inicia en (self.x, self.y) abarcando un rango de celdas indicado por self.cells sobre self.table
+        en dirección NO.
+            NO  N   NE
+            O   +   E
+            SO  S  SE
+        :return: Un generador que contiene las posiciones seleccionadas de la tabla. retorna None si la selección
+        no se puede realizar.
+        :rtype: generator
+        """
         # formula para validar la búsqueda en diagonal-y
         # x - cell >= 0 and y + 1 - cell >= 0
 
@@ -703,7 +786,18 @@ class TableSection:
             for i in range(self.__cell__ + 1):
                 yield self.__x__ - i, self.__y__ - i
 
+    # Documentado
     def gn_section_diagonal_xr(self):
+        """Permite obtener una selección en sentido SO (hacia la izquierda y hacia abajo).
+        La selección inicia en (self.x, self.y) abarcando un rango de celdas indicado por self.cells sobre self.table
+        en dirección SO.
+            NO  N   NE
+            O   +   E
+            SO  S  SE
+        :return: Un generador que contiene las posiciones seleccionadas de la tabla. retorna None si la selección
+        no se puede realizar.
+        :rtype: generator
+        """
         # formula para validar la búsqueda en diagonal-xr
         # x + cell <= row - 1 and  y + 1 - cell >= 0
 
@@ -712,7 +806,18 @@ class TableSection:
             for i in range(self.__cell__ + 1):
                 yield self.__x__ + i, self.__y__ - i
 
+    # Documentado
     def gn_section_diagonal_yr(self):
+        """Permite obtener una selección en sentido SE (hacia la derecha y hacia abajo).
+        La selección inicia en (self.x, self.y) abarcando un rango de celdas indicado por self.cells sobre self.table
+        en dirección SE.
+            NO  N   NE
+            O   +   E
+            SO  S  SE
+        :return: Un generador que contiene las posiciones seleccionadas de la tabla. retorna None si la selección
+        no se puede realizar.
+        :rtype: generator
+        """
         # formula para validar la búsqueda en diagonal-yr
         # x + cell <= row - 1 and y + cell <= column - 1
         if self.__x__ + self.__cell__ <= len(self.__table__) - 1 and self.__y__ + self.__cell__ <= len(
@@ -731,5 +836,5 @@ t = [
     ['T', 'V', 'X', 'Y', 'Z', '0'],
     ['1', '2', '3', '4', '5', '6']]
 
-k = Table(row=2, column=3)
+k = TableSection(0, 0, 3, t)
 print(k)
