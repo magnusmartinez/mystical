@@ -1,5 +1,5 @@
 import unittest
-from src.TableType import table
+from src.pytable import table
 from random import random
 
 global _t_Table
@@ -96,7 +96,7 @@ class MyTableTest(unittest.TestCase):
         object_table_2 = table.Table(row, column, 23)
 
         self.assertIsNone(object_table_0.fill)
-        self.assertEqual(object_table_1.fill, '0')
+        self.assertEqual(object_table_1.fill, 0)
         self.assertEqual(object_table_2.fill, 23)
 
     def test_section_up(self):
