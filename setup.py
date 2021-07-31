@@ -4,23 +4,28 @@ with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
 
 setuptools.setup(
-    name="TableType",
-    version="0.0.1",
+    name="mystical",
+    version="1.0.0",
     author="Magnus Martínez",
     author_email="shainnymarcruz345@gmail.com",
-    description="Módulo Python para el procesamiento de tablas, permite la selección de celdas en cualquier dirección.",
+    description="Paquete para el procesamiento de tablas, permite la selección de celdas en cualquier dirección.",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/magnusmartinez/pytable.git",
-    project_urls={
-       "Bug Tracker": "https://github.com/pypa/sampleproject/issues",
-    },
     classifiers=[
         "Programming Language :: Python :: 3",
-        "License :: OSI Approved :: GNU GENERAL PUBLIC",
+        "Programming Language :: Python :: 3.7",
+        "Programming Language :: Python :: 3.8",
+        "Programming Language :: Python :: 3.8",
+        "Programming Language :: Python :: 3.9",
         "Operating System :: OS Independent",
+        "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
+        "Topic :: Scientific/Engineering"
     ],
     package_dir={"": "src"},
     packages=setuptools.find_packages(where="src", ),
     python_requires=">=3.6",
+    install_requires=[
+        "tabulate>=0.8.9"
+    ]
 )

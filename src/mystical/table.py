@@ -1,9 +1,4 @@
-
-__author__ = "Magnus Martínez"
-__copyright__ = "Copyright 2021"
-__version__ = "0.0.1"
-__name__ = 'table'
-
+from tabulate import tabulate
 TYPES = ('UP', 'DOWN', 'RIGHT', 'LEFT', 'DIAGONAL-X', 'DIAGONAL-Y', 'DIAGONAL-XR', 'DIAGONAL-YR')
 UP = 'UP'
 DOWN = 'DOWN'
@@ -14,7 +9,6 @@ DIAGONAL_Y = 'DIAGONAL-Y'
 DIAGONAL_XR = 'DIAGONAL-XR'
 DIAGONAL_YR = 'DIAGONAL-YR'
 
-from tabulate import tabulate
 
 class AnyError(Exception):
     """BaseError class for all Exceptions of type Tabla"""
@@ -167,9 +161,9 @@ class Table:
         """Establece una tabla previamente construida.
         La tabla previamente construida debe cumplir las siguientes directivas:
 
-        * La tabla debe ser de tipo lista y todos elementos también
+        * La tabla debe ser de tipo lista y todos sus elementos también
         * Las dimensiones mínimas admitidas son 1x1
-        * El número de celdas en cada fila debe ser común.
+        * El número de celdas en cada fila debe ser igual.
 
         :param list value: Es una matriz previamente construida.
         :raise TableStructureError:  Si la matriz pasada no cumple con las directivas.

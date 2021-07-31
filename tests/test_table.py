@@ -1,8 +1,7 @@
 import unittest
 from src.pytable import table
-from random import random
+from random import random, choice
 
-global _t_Table
 _t_Table = [
     ['A', 'B', 'C', 'D', 'F', 'G'],
     ['H', 'I', 'J', 'K', 'L', 'M'],
@@ -49,6 +48,10 @@ class MyTableTest(unittest.TestCase):
 
     def test_table_set(self):
         pass
+        # k = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+        # raw_table = [(choice(k))] * choice(k)
+        #
+        # object_table = table.Table(_t_Table)
 
     def test_row_set(self):
         # ValueError, si value no es de tipo número y mayor que 0
@@ -60,8 +63,7 @@ class MyTableTest(unittest.TestCase):
 
         self.assertEqual(object_table.row, _row)
 
-        # Falta probar que devuelva la excepcion en el caso que sea requerido.
-
+        # Falta probar que devuelva la excepción en el caso que sea requerido.
 
     def test_column_get(self):
         row = round((random() * 30) + 1)
