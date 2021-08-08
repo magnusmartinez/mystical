@@ -1,4 +1,5 @@
 from tabulate import tabulate
+
 TYPES = ('UP', 'DOWN', 'RIGHT', 'LEFT', 'DIAGONAL-X', 'DIAGONAL-Y', 'DIAGONAL-XR', 'DIAGONAL-YR')
 UP = 'UP'
 DOWN = 'DOWN'
@@ -100,7 +101,7 @@ class Table:
             elif len(args) == 1:
                 self.table = args[0]
             else:
-                raise ValueError(f'se esperaban 3, 2 o 1 argumentos y pasaraon {len(args)}: {args} ')
+                raise ValueError(f'se esperaban 3, 2 o 1 argumentos y pasaron {len(args)}: {args} ')
 
         if kwargs:
             try:
@@ -127,6 +128,15 @@ class Table:
 
     def __repr__(self):
         return f"{self.__class__.__name__}({self.row}, {self.column}, {self.fill})"
+
+    # Documentado
+    def dimension(self) -> str:
+        """Devuelve la dimensiones de la tabla.
+
+        :return: Retorna la dimensión de la tabla filas por columnas.
+        :rtype str
+        """
+        return f"{self.row}x{self.column}"
 
     # Documentado
     @property
@@ -226,7 +236,6 @@ class Table:
                 Un diccionario con las siguientes llaves:
                 * type: La orientación de la selección
                 * position: Las posiciones correspondientes a la selección
-                * content-cell: La unión del contenido de las celdas seleccionadas
         :rtype: dict
 
         :raise ValueError: si self.validate(row, column, cell) retorna Falso
@@ -238,12 +247,12 @@ class Table:
             raise ValueError(
                 'Los parámetros no son válidos.'
             )
-        output = {'type': self.__type[0], 'position': [], 'content-cell': ''}
+        output = {'type': self.__type[0], 'position': []}
         for i in range(cell):
             if 0 > row - i:
                 raise TableSectionError()
             output['position'].append((row - i, column))
-            output['content-cell'] += self.table[row - i][column]
+            # output['content-cell'] += self.table[row - i][column]
         return output
 
     # Documentado
@@ -264,7 +273,6 @@ class Table:
                 Un diccionario con las siguientes llaves:
                 * type: La orientación de la selección
                 * position: Las posiciones correspondientes a la selección
-                * content-cell: La unión del contenido de las celdas seleccionadas
         :rtype: dict
 
         :raise ValueError: si self.validate(row, column, cell) retorna Falso
@@ -277,11 +285,11 @@ class Table:
             raise ValueError(
                 'Los parámetros no son válidos.'
             )
-        output = {'type': self.__type[1], 'position': [], 'content-cell': ''}
+        output = {'type': self.__type[1], 'position': []}
         for i in range(cell):
             try:
                 output['position'].append((row + i, column))
-                output['content-cell'] += self.table[row + i][column]
+                # output['content-cell'] += self.table[row + i][column]
             except IndexError:
                 raise TableSectionError("Limites excedidos.")
         return output
@@ -304,7 +312,6 @@ class Table:
                 Un diccionario con las siguientes llaves:
                 * type: La orientación de la selección
                 * position: Las posiciones correspondientes a la selección
-                * content-cell: La unión del contenido de las celdas seleccionadas
         :rtype: dict
 
         :raise ValueError: si self.validate(row, column, cell) retorna Falso
@@ -316,11 +323,11 @@ class Table:
             raise ValueError(
                 'Los parámetros no son válidos.'
             )
-        output = {'type': self.__type[2], 'position': [], 'content-cell': ''}
+        output = {'type': self.__type[2], 'position': []}
         for i in range(cell):
             try:
                 output['position'].append((row, column + i))
-                output['content-cell'] += self.table[row][column + i]
+                # output['content-cell'] += self.table[row][column + i]
             except IndexError:
                 raise TableSectionError()
         return output
@@ -343,7 +350,6 @@ class Table:
                 Un diccionario con las siguientes llaves:
                 * type: La orientación de la selección
                 * position: Las posiciones correspondientes a la selección
-                * content-cell: La unión del contenido de las celdas seleccionadas
         :rtype: dict
 
         :raise ValueError: si self.validate(row, column, cell) retorna Falso
@@ -355,12 +361,12 @@ class Table:
             raise ValueError(
                 'Los parámetros no son válidos.'
             )
-        output = {'type': self.__type[3], 'position': [], 'content-cell': ''}
+        output = {'type': self.__type[3], 'position': []}
         for i in range(cell):
             if column - i < 0:
                 raise TableSectionError()
             output['position'].append((row, column - i))
-            output['content-cell'] += self.table[row][column - i]
+            # output['content-cell'] += self.table[row][column - i]
         return output
 
     # Documentado
@@ -381,7 +387,6 @@ class Table:
                 Un diccionario con las siguientes llaves:
                 * type: La orientación de la selección
                 * position: Las posiciones correspondientes a la selección
-                * content-cell: La unión del contenido de las celdas seleccionadas
         :rtype: dict
 
         :raise ValueError: si self.validate(row, column, cell) retorna Falso
@@ -393,13 +398,13 @@ class Table:
             raise ValueError(
                 'Los parámetros no son válidos.'
             )
-        output = {'type': self.__type[4], 'position': [], 'content-cell': ''}
+        output = {'type': self.__type[4], 'position': []}
         for i in range(cell):
             try:
                 if row - i < 0:
                     raise TableSectionError("Limites excedido.")
                 output['position'].append((row - i, column + i))
-                output['content-cell'] += self.table[row - i][column + i]
+                # output['content-cell'] += self.table[row - i][column + i]
             except IndexError:
                 raise TableSectionError()
         return output
@@ -422,7 +427,6 @@ class Table:
                 Un diccionario con las siguientes llaves:
                 * type: La orientación de la selección
                 * position: Las posiciones correspondientes a la selección
-                * content-cell: La unión del contenido de las celdas seleccionadas
         :rtype: dict
 
         :raise ValueError: si self.validate(row, column, cell) retorna Falso
@@ -434,13 +438,13 @@ class Table:
             raise ValueError(
                 'Los parámetros no son válidos.'
             )
-        output = {'type': self.__type[5], 'position': [], 'content-cell': ''}
+        output = {'type': self.__type[5], 'position': []}
         for i in range(cell):
             try:
                 if row - i < 0 or column - i < 0:
                     raise ValueError("Limites excedidos.")
                 output['position'].append((row - i, column - i))
-                output['content-cell'] += self.table[row - i][column - i]
+                # output['content-cell'] += self.table[row - i][column - i]
             except IndexError:
                 raise TableSectionError()
         return output
@@ -463,7 +467,6 @@ class Table:
                 Un diccionario con las siguientes llaves:
                 * type: La orientación de la selección
                 * position: Las posiciones correspondientes a la selección
-                * content-cell: La unión del contenido de las celdas seleccionadas
         :rtype: dict
 
         :raise ValueError: si self.validate(row, column, cell) retorna Falso
@@ -476,13 +479,13 @@ class Table:
             raise ValueError(
                 'Los parámetros no son válidos.'
             )
-        output = {'type': self.__type[6], 'position': [], 'content-cell': ''}
+        output = {'type': self.__type[6], 'position': []}
         for i in range(cell):
             try:
                 if column - i < 0:
                     raise TableSectionError('Limites excedidos')
                 output['position'].append((row + i, column - i))
-                output['content-cell'] += self.table[row + i][column - i]
+                # output['content-cell'] += self.table[row + i][column - i]
             except IndexError:
                 raise TableSectionError()
         return output
@@ -492,7 +495,7 @@ class Table:
         """Permite realizar un selección sobre la tabla en sentido SE (hacia abajo y hacia la derecha),
         partiendo del punto (`row`, `column`), abarcando un rango `cell`.
             NO  N   NE
-            O section_diagonal_xr  +   E
+            O   +   E
             SO  S  SE
 
         :param int row: Fila inicial de la selección. Debe ser mayor o igual a 0.
@@ -505,7 +508,6 @@ class Table:
                 Un diccionario con las siguientes llaves:
                 * type: La orientación de la selección
                 * position: Las posiciones correspondientes a la selección
-                * content-cell: La unión del contenido de las celdas seleccionadas
         :rtype: dict
 
         :raise ValueError: si self.validate(row, column, cell) retorna Falso
@@ -517,11 +519,11 @@ class Table:
             raise ValueError(
                 'Los parámetros no son válidos.'
             )
-        output = {'type': self.__type[7], 'position': [], 'content-cell': ''}
+        output = {'type': self.__type[7], 'position': []}
         for i in range(cell):
             try:
                 output['position'].append((row + i, column + i))
-                output['content-cell'] += self.table[row + i][column + i]
+                # output['content-cell'] += self.table[row + i][column + i]
             except IndexError:
                 raise TableSectionError()
         return output
@@ -624,7 +626,7 @@ class Table:
             """
         if isinstance(column, int) and column >= 0 and len(self.table[0]):
             try:
-                return list(self.section_down(0, column, len(self.table))['content-cell'])
+                return [self.table[x[0]][x[1]] for x in self.section_down(0, column, len(self.table))['position']]
             except TableSectionError:
                 pass
 
@@ -826,14 +828,24 @@ class TableSection:
                 yield self.__x__ + i, self.__y__ + i
 
 
-xy = (1, 1)
-cell = 3
-t = [
-    ['A', 'B', 'C', 'D', 'F', 'G'],
-    ['H', 'I', 'J', 'K', 'L', 'M'],
-    ['Ñ', 'O', 'P', 'Q', 'R', 'S'],
-    ['T', 'V', 'X', 'Y', 'Z', '0'],
-    ['1', '2', '3', '4', '5', '6']]
+# # xy = (1, 1)
+# cell = 3
+# tl = [
+#     ['A', 'B', 'C', 'D', 'F', 'G'],
+#     ['H', 'I', 'J', 'K', 'L', 'M'],
+#     ['Ñ', 'O', 'P', 'Q', 'R', 'S'],
+#     ['T', 'V', 'X', 'Y', 'Z', '0'],
+#     ['1', '2', '3', '4', '5', '6']]
 
-k = TableSection(0, 0, 3, t)
-print(k)
+t = [
+        [7, 30, 36, 16, 7, 43, 8, 47, 9, 20, 27, 4],
+        [1, 9, 2, 21, 42, 5, 13, 6, 47, 31, 34, 11],
+        [39, 39, 38, 15, 21, 23, 8, 4, 39, 2, 1, 7],
+        [7, 16, 34, 4, 4, 27, 1, 41, 9, 24, 45, 29],
+        [32, 36, 8, 38, 45, 10, 16, 6, 47, 1, 3, 2],
+        [1, 1, 45, 16, 37, 4, 11, 40, 27, 25, 8, 2],
+        [5, 31, 1, 49, 3, 17, 22, 4, 14, 19, 11, 2]
+]
+
+k = Table(t)
+print(k.section_diagonal_yr(0, 0, 5))

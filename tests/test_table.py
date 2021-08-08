@@ -1,5 +1,5 @@
 import unittest
-from src.pytable import table
+from src.mystical import table
 from random import random, choice
 
 _t_Table = [
