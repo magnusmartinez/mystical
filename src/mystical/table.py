@@ -1,4 +1,5 @@
 from tabulate import tabulate
+from random import randrange
 
 TYPES = ('UP', 'DOWN', 'RIGHT', 'LEFT', 'DIAGONAL-X', 'DIAGONAL-Y', 'DIAGONAL-XR', 'DIAGONAL-YR')
 UP = 'UP'
@@ -44,34 +45,33 @@ class TableStructureError(AnyError):
 class Table:
     """Permita la creación y manipulación de tablas.
 
-    Construye la tabla en base a los argumentos pasados.
-    Hay varias formas para obtener los valores para la creación de la tabla.
+       Construye la tabla en base a los argumentos pasados.
+       Hay varias formas para obtener los valores para la creación de la tabla.
 
-            Pasando parámetros usando *args:
+    Argumentos posicionales:
 
-                Si se pasa 1 argumento, se asume que es una tabla previamente construida. Si se pasan 2 argumentos, se asume
-                que el primero es el número de filas que debe tener la tabla y el segundo es son la cantidad de columnas que
-                debe tener la tabla. Si se pasan 3 argumentos, se asume que el primero es la cantidad de filas que debe
-                tener la tabla, el segundo representa la cantidad de columnas y el último es el contenido que desea que
-                tengan las celdas inicialmente.
+    Si se pasa 1 argumento, se asume que es una tabla previamente construida. Si se pasan 2 argumentos, se asume
+    que el primero es el número de filas que debe tener la tabla y el segundo es son la cantidad de columnas que
+    debe tener la tabla. Si se pasan 3 argumentos, se asume que el primero es la cantidad de filas que debe
+    tener la tabla, el segundo representa la cantidad de columnas y el último es el contenido que desea que
+    tengan las celdas inicialmente.
 
-            Pasando parámetros usando **kwargs:
+    Argumentos clave-valor:
+        `table`, para pasar una tabla previamente construida.
+        `fill`, para pasar el contenido que desea que tengan las celdas inicialmente.
+        `row`: para pasar el número de filas que debe tener la tabla.
+        `column`: para pasar el número de columnas que debe tener la tabla.
 
-                `table`, para pasar una tabla previamente construida.
-                `fill`, para pasar el contenido que desea que tengan las celdas inicialmente.
-                `row`: para pasar el número de filas que debe tener la tabla.
-                `column`: para pasar el número de columnas que debe tener la tabla.
-
-            Restricciones:
-            * El paso de parámetros de forma arbitraria solo se permite mediante *args o **kwargs, no se puede usar ambos
+    Restricciones:
+        * El paso de parámetros de forma arbitraria solo se permite mediante *args o **kwargs, no se puede usar ambos
             de forma simultanea.
-            * Pasando argumentos por **kwargs: la clave table omite a las demás, es decir, si se pasa table no se debe de
-            pasar otros argumentos en vista de que table debe ser una tabla previamente construida. Si clave table no es
-            pasada, las claves row y column pasa a ser obligatorias. La clave fill es opcional, sino se provee, se usa su
-            valor por defecto que es 0.
+        * Pasando argumentos por **kwargs: la clave table omite a las demás, es decir, si se pasa table no se debe de
+        pasar otros argumentos en vista de que table debe ser una tabla previamente construida. Si clave table no es
+        pasada, las claves row y column pasa a ser obligatorias. La clave fill es opcional, sino se provee, se usa su
+        valor por defecto que es 0.
 
-            :raise ValueError: Si se pasa parámetros por *args y **kwargs.
-            :raise KeyError: Si se omite la clave table y no se pasa la clave row y column en su sustitución.
+    :raise ValueError: Si se pasa parámetros por *args y **kwargs.
+    :raise KeyError: Si se omite la clave table y no se pasa la clave row y column en su sustitución.
         """
 
     def __init__(self, *args, **kwargs):
@@ -828,24 +828,72 @@ class TableSection:
                 yield self.__x__ + i, self.__y__ + i
 
 
-# # xy = (1, 1)
-# cell = 3
-# tl = [
-#     ['A', 'B', 'C', 'D', 'F', 'G'],
-#     ['H', 'I', 'J', 'K', 'L', 'M'],
-#     ['Ñ', 'O', 'P', 'Q', 'R', 'S'],
-#     ['T', 'V', 'X', 'Y', 'Z', '0'],
-#     ['1', '2', '3', '4', '5', '6']]
+def create_table(row: int,
+                 column: int,
+                 fill: int = 0,
+                 random_fill: bool = False,
+                 _min: int = 0,
+                 _max: int = 100,
+                 exclude=None):
+    """Crea una tabla de con dimensiones y contenido personalizado
 
-t = [
-        [7, 30, 36, 16, 7, 43, 8, 47, 9, 20, 27, 4],
-        [1, 9, 2, 21, 42, 5, 13, 6, 47, 31, 34, 11],
-        [39, 39, 38, 15, 21, 23, 8, 4, 39, 2, 1, 7],
-        [7, 16, 34, 4, 4, 27, 1, 41, 9, 24, 45, 29],
-        [32, 36, 8, 38, 45, 10, 16, 6, 47, 1, 3, 2],
-        [1, 1, 45, 16, 37, 4, 11, 40, 27, 25, 8, 2],
-        [5, 31, 1, 49, 3, 17, 22, 4, 14, 19, 11, 2]
-]
+    :param int row: Cantidad de filas que debe tener la tabla.
+    :param int column: Cantidad de columnas que debe tener la tabla.
+    :param int fill: Contenido de las celdas de la tabla. Si se random_fill igual a True, el valor de fill es ignorado.
+    :param int random_fill: Si es igual a True, se llenarán las celdas con números aleatorios entre _min y _max.
+    :param int _min: Mínimo número con el que se llenará la tabla.
+    :param int _max: Máximo número con el que se llenará la tabla.
+    :param list exclude: Lista de números que desea excluir de las celdas de la tabla.
+    Solo funciona si se usa random_fill.
+    :return: Retorna una tabla generada con los parámetros establecidos.
+    :rtype: list
+    """
 
-k = Table(t)
-print(k.section_diagonal_yr(0, 0, 5))
+    if random_fill:
+        output = []
+        for r in range(row):
+            col = []
+            for c in range(column):
+                if exclude is not None:
+                    number = randrange(_min, _max)
+                    while number in exclude:
+                        number = randrange(_min, _max)
+                    col.append(number)
+                else:
+                    number = randrange(_min, _max)
+                    col.append(number)
+            output.append(col)
+        return output
+    else:
+        return [[fill] * column for _ in range(row)]
+
+# Tabla creada automáticamente
+# t = create_table(3, 5, random_fill=True, _min=1, _max=50)
+
+# t = [
+#     [7, 30, 36, 16, 7, 43, 8, 47, 9, 20, 27, 4],
+#     [1, 9, 2, 21, 42, 5, 13, 6, 47, 31, 34, 11],
+#     [39, 39, 38, 15, 21, 23, 8, 4, 39, 2, 1, 7],
+#     [7, 16, 34, 4, 4, 27, 1, 41, 9, 24, 45, 29],
+#     [32, 36, 8, 38, 45, 10, 16, 6, 47, 1, 3, 2],
+#     [1, 1, 45, 16, 37, 4, 11, 40, 27, 25, 8, 2],
+#     [5, 31, 1, 49, 3, 17, 22, 4, 14, 19, 11, 2]
+# ]
+#
+# k = Table(t)
+# print(k.section_diagonal_yr(0, 0, 5))
+
+# t = [
+#     [7, 30, 36, 16, 7, 43, 8, 47, 9, 20, 27, 4],
+#     [1, 9, 2, 21, 42, 5, 13, 6, 47, 31, 34, 11],
+#     [39, 39, 38, 15, 21, 23, 8, 4, 39, 2, 1, 7],
+#     [7, 16, 34, 4, 4, 27, 1, 41, 9, 24, 45, 29],
+#     [32, 36, 8, 38, 45, 10, 16, 6, 47, 1, 3, 2],
+#     [1, 1, 45, 16, 37, 4, 11, 40, 27, 25, 8, 2],
+#     [5, 31, 1, 49, 3, 17, 22, 4, 14, 19, 11, 2]
+# ]
+#
+# k = Table(t)
+# print(k.section_diagonal_yr(0, 0, 5))
+
+
